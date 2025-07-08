@@ -1,54 +1,44 @@
-import { useState } from "react";
+type WorkloadProps = {
+  workHoursPerDay: number;
+  setWorkHoursPerDay: (value: number) => void;
+  workDaysPerWeek: number;
+  setWorkDaysPerWeek: (value: number) => void;
+};
 
-export function Workload() {
-  const [workHoursPerDay, setWorkHoursPerDay] = useState(8);
-  const [workDaysPerWeek, setWorkDaysPerWeek] = useState(5);
+export function Workload({
+  workHoursPerDay,
+  setWorkHoursPerDay,
+  workDaysPerWeek,
+  setWorkDaysPerWeek,
+}: WorkloadProps) {
+  const monthlyWorkHours = Math.floor(workHoursPerDay * workDaysPerWeek * 4.3);
 
-  const weeklyWorkHours = workHoursPerDay * workDaysPerWeek;
-  const monthlyWorkHours = Math.floor(weeklyWorkHours * 4.3);
-
-  const handleClick = () => {
-    const workHoursInput = document.querySelector(
-      "input[name='workHoursPerDay']"
-    ) as HTMLInputElement;
-    const workDaysInput = document.querySelector(
-      "input[name='workDaysPerWeek']"
-    ) as HTMLInputElement;
-
-    setWorkHoursPerDay(workHoursInput.valueAsNumber);
-    setWorkDaysPerWeek(workDaysInput.valueAsNumber);
-
-    workHoursInput.value = "";
-    workDaysInput.value = "";
+  const handleSave = () => {
+    localStorage.setItem("workHoursPerDay", workHoursPerDay.toString());
+    localStorage.setItem("workDaysPerWeek", workDaysPerWeek.toString());
   };
 
   return (
     <div className="container">
-      <form className="field m-1" onSubmit={(e) => e.preventDefault()}>
-        <label className="label mt-1">Horas por dia</label>
-        <input
-          type="number"
-          placeholder="ex. 8"
-          className="input is-primary mb-4"
-          name="workHoursPerDay"
-        />
-        <label className="label mt-1">dias por semana</label>
-        <input
-          type="number"
-          placeholder="ex. 5"
-          className="input is-primary mb-4"
-          name="workDaysPerWeek"
-        />
-        <button className="button is-primary my-4" onClick={handleClick}>
-          calcular
-        </button>
-      </form>
-      <div className="notification">
-        <p>
-          ({workHoursPerDay}*{workDaysPerWeek})*4,3
-        </p>
-        <h4 className="title is-6">Horas por mês: {monthlyWorkHours}</h4>
-      </div>
+      <input
+        type="number"
+        value={workHoursPerDay}
+        onChange={(e) => setWorkHoursPerDay(Number(e.target.value))}
+        name="workHoursPerDay"
+        className="input is-primary mb-4"
+      />
+      <input
+        type="number"
+        value={workDaysPerWeek}
+        onChange={(e) => setWorkDaysPerWeek(Number(e.target.value))}
+        name="workDaysPerWeek"
+        className="input is-primary mb-4"
+      />
+      <button className="button is-primary my-4" onClick={handleSave}>
+        Salvar
+      </button>
+
+      <h4>Horas por mês: {monthlyWorkHours}</h4>
     </div>
   );
 }

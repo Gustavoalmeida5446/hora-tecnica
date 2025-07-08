@@ -1,14 +1,25 @@
 import { useState } from "react";
 import "../Style.css";
 
-export function Custos() {
-  type CostItem = {
-    description: string;
-    cost: number;
-    id: string;
-  };
+type CostItem = {
+  description: string;
+  cost: number;
+  id: string;
+};
 
-  const [costs, setCosts] = useState<CostItem[]>([]);
+type CostsProps = {
+  costs: CostItem[];
+  setCosts: React.Dispatch<React.SetStateAction<CostItem[]>>;
+};
+
+export function FixedCosts({ costs, setCosts }: CostsProps) {
+  // type CostItem = {
+  //   description: string;
+  //   cost: number;
+  //   id: string;
+  // };
+
+  // const [costs, setCosts] = useState<CostItem[]>([]);
   const [description, setDescription] = useState("");
   const [cost, setCost] = useState<number>(0);
 
@@ -24,10 +35,13 @@ export function Custos() {
     setCosts((prevCosts) => [...prevCosts, newCost]);
     setDescription("");
     setCost(0);
+    localStorage.setItem("costs", JSON.stringify([...costs, newCost]));
   };
 
   const handleRemove = (id: string) => {
     setCosts((prevCosts) => prevCosts.filter((item) => item.id !== id));
+    const updatedCosts = costs.filter((item) => item.id !== id);
+    localStorage.setItem("costs", JSON.stringify(updatedCosts));
   };
 
   const totalFixedCosts = costs.reduce((acc, item) => acc + item.cost, 0);
