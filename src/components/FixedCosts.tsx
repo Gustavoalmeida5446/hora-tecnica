@@ -1,94 +1,40 @@
-import { useState } from "react";
-import "../Style.css";
-
-type CostItem = {
-  description: string;
-  cost: number;
-  id: string;
-};
-
-type CostsProps = {
-  costs: CostItem[];
-  setCosts: React.Dispatch<React.SetStateAction<CostItem[]>>;
-};
-
-export function FixedCosts({ costs, setCosts }: CostsProps) {
-  // type CostItem = {
-  //   description: string;
-  //   cost: number;
-  //   id: string;
-  // };
-
-  // const [costs, setCosts] = useState<CostItem[]>([]);
-  const [description, setDescription] = useState("");
-  const [cost, setCost] = useState<number>(0);
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const newCost = {
-      description,
-      cost,
-      id: Date.now().toString(),
-    };
-
-    setCosts((prevCosts) => [...prevCosts, newCost]);
-    setDescription("");
-    setCost(0);
-    localStorage.setItem("costs", JSON.stringify([...costs, newCost]));
-  };
-
-  const handleRemove = (id: string) => {
-    setCosts((prevCosts) => prevCosts.filter((item) => item.id !== id));
-    const updatedCosts = costs.filter((item) => item.id !== id);
-    localStorage.setItem("costs", JSON.stringify(updatedCosts));
-  };
-
-  const totalFixedCosts = costs.reduce((acc, item) => acc + item.cost, 0);
-
+export function FixedCosts() {
   return (
-    <div className="container">
-      <form className="field m-1" onSubmit={handleSubmit}>
-        <label className="label mt-1">Descrição</label>
-        <input
-          id="description"
-          type="text"
-          placeholder="ex. Aluguel"
-          className="input is-primary mb-4"
-          name="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <label className="label mt-1">Valor</label>
-        <input
-          id="cost"
-          type="number"
-          placeholder="200"
-          className="input is-primary mb-4"
-          name="cost"
-          value={cost || ""}
-          width="10px"
-          onChange={(e) => setCost(parseFloat(e.target.value))}
-        />
-        <button type="submit" className="button is-primary my-4">
-          adicionar
-        </button>
-      </form>
-
-      <div className="notification">
-        <ul>
-          {costs.map((item) => (
-            <li key={item.id} className="my-4">
-              {item.description}: R$ {item.cost}
-              <button
-                className="delete is-small ml-2"
-                onClick={() => handleRemove(item.id)}
-              />
-            </li>
-          ))}
-        </ul>
-
-        <h4 className="title is-6">total: R$ {totalFixedCosts}</h4>
+    <div className="section">
+      <div className="container">
+        <div className="columns">
+          <div className="column is-half is-offset-one-quarter">
+            <h3 className="title is-3 has-text-centered">Custos fixos</h3>
+            <p className="mb-4">
+              Adicione aqui os seus custos fixos mensais. Custos fixos são
+              despesas que você tem todo mês, independentemente da quantidade de
+              trabalho ou projetos realizados. Eles não variam com a sua
+              produção. Exemplos comuns de custos fixos incluem: aluguel do
+              escritório ou da casa, conta de internet, energia elétrica,
+              assinaturas de softwares como Adobe ou Figma, e serviços como
+              contador ou MEI.
+            </p>
+            <div className="columns is-vcentered is-multiline">
+              <div className="column is-half">
+                <label className="label">Descrição do custo</label>
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="Ex: Aluguel"
+                />
+              </div>
+              <div className="column is-half">
+                <label className="label">Valor mensal (R$)</label>
+                <input className="input" type="number" placeholder="Ex: 1200" />
+              </div>
+              <div className="column">
+                <button className="button is-link ">
+                  Adicionar custo fixo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
