@@ -22,13 +22,33 @@ export function calculateTotalVariableCosts(costs: { cost: number }[]): number {
 }
 
 
+// export function calculateBaseHourCost(
+//   totalFixedCosts: number,
+//   desiredSalary: number,
+//   monthlyWorkHours: number
+// ): number {
+//   return (totalFixedCosts + desiredSalary) / monthlyWorkHours;
+// } 
+
+// export function calculateHourRate(
+//   totalFixedCosts: number,
+//   desiredSalary: number,
+//   monthlyWorkHours: number,
+//   desiredProfit: number
+// ): number {
+//   const base = totalFixedCosts + desiredSalary;
+//   const profitMargin = 1 + desiredProfit / 100;
+//     return (base * profitMargin) / monthlyWorkHours;
+//   }
+
 export function calculateBaseHourCost(
   totalFixedCosts: number,
   desiredSalary: number,
   monthlyWorkHours: number
 ): number {
-  return (totalFixedCosts + desiredSalary) / monthlyWorkHours;
-} 
+  const safeMonthlyWorkHours = monthlyWorkHours || 1;
+  return (totalFixedCosts + desiredSalary) / safeMonthlyWorkHours;
+}
 
 export function calculateHourRate(
   totalFixedCosts: number,
@@ -36,14 +56,31 @@ export function calculateHourRate(
   monthlyWorkHours: number,
   desiredProfit: number
 ): number {
+  const safeMonthlyWorkHours = monthlyWorkHours || 1;
   const base = totalFixedCosts + desiredSalary;
   const profitMargin = 1 + desiredProfit / 100;
-    return (base * profitMargin) / monthlyWorkHours;
-  }
+  return (base * profitMargin) / safeMonthlyWorkHours;
+}
+
+
+// export function saveProjectDays(projectDays: number): number {
+//   return projectDays
+// ;}
+
+// export function calculateProjectValue(
+//   hourRate: number,
+//   projectDays: number,
+//   workHoursPerDay: number,
+//   variableCosts: { cost: number }[]
+// ): number {
+//   const totalHours = projectDays * workHoursPerDay;
+//   const totalVariableCosts = calculateTotalVariableCosts(variableCosts);
+//   return (hourRate * totalHours) + totalVariableCosts;
+// }
 
 export function saveProjectDays(projectDays: number): number {
-  return projectDays
-;}
+  return projectDays || 1;
+}
 
 export function calculateProjectValue(
   hourRate: number,
@@ -51,7 +88,12 @@ export function calculateProjectValue(
   workHoursPerDay: number,
   variableCosts: { cost: number }[]
 ): number {
-  const totalHours = projectDays * workHoursPerDay;
+  const safeProjectDays = projectDays || 1;
+  const safeWorkHoursPerDay = workHoursPerDay || 1;
+  const safeHourRate = hourRate || 1;
+
+  const totalHours = safeProjectDays * safeWorkHoursPerDay;
   const totalVariableCosts = calculateTotalVariableCosts(variableCosts);
-  return (hourRate * totalHours) + totalVariableCosts;
+
+  return safeHourRate * totalHours + totalVariableCosts;
 }
