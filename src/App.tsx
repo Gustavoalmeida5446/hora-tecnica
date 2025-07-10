@@ -8,6 +8,7 @@ import { Workload } from "./components/Workload";
 import { Hero } from "./components/Hero";
 import "./Style.css";
 import { Footer } from "./components/Footer";
+import { ClearLocalStorage } from "./components/ClearLocalStorage";
 
 type Cost = {
   id: number;
@@ -16,10 +17,11 @@ type Cost = {
 };
 
 function App() {
+  const [storageCleared, setStorageCleared] = useState(false);
   const [desiredSalary, setDesiredSalary] = useState(0);
   const [desiredProfit, setDesiredProfit] = useState(0);
   const [projectDays, setProjectDays] = useState(0);
-  const [monthlyWorkHours, setMonthlyWorkHours] = useState<number | null>(null);
+  const [monthlyWorkHours, setMonthlyWorkHours] = useState(0);
   const [costs, setCosts] = useState<Cost[]>([]);
   const [variableCosts, setVariableCosts] = useState<Cost[]>([]);
   const [calculatedHourRate, setCalculatedHourRate] = useState(0);
@@ -30,11 +32,20 @@ function App() {
     <>
       <Hero />
 
-      <FixedCosts costs={costs} setCosts={setCosts} />
+      <ClearLocalStorage setStorageCleared={setStorageCleared} />
+
+      <FixedCosts
+        costs={costs}
+        setCosts={setCosts}
+        storageCleared={storageCleared}
+        setStorageCleared={setStorageCleared}
+      />
 
       <Salary
         desiredSalary={desiredSalary}
         setDesiredSalary={setDesiredSalary}
+        storageCleared={storageCleared}
+        setStorageCleared={setStorageCleared}
       />
 
       <Workload
@@ -44,11 +55,15 @@ function App() {
         setWorkHoursPerDay={setWorkHoursPerDay}
         workDaysPerWeek={workDaysPerWeek}
         setWorkDaysPerWeek={setWorkDaysPerWeek}
+        storageCleared={storageCleared}
+        setStorageCleared={setStorageCleared}
       />
 
       <Profit
         desiredProfit={desiredProfit}
         setDesiredProfit={setDesiredProfit}
+        storageCleared={storageCleared}
+        setStorageCleared={setStorageCleared}
       />
 
       <HourCalculation
@@ -58,6 +73,8 @@ function App() {
         monthlyWorkHours={monthlyWorkHours ?? 0}
         setCalculatedHourRate={setCalculatedHourRate}
         calculatedHourRate={calculatedHourRate}
+        storageCleared={storageCleared}
+        setStorageCleared={setStorageCleared}
       />
 
       <ProjectValue
@@ -67,6 +84,8 @@ function App() {
         setProjectDays={setProjectDays}
         calculatedHourRate={calculatedHourRate}
         workHoursPerDay={workHoursPerDay}
+        storageCleared={storageCleared}
+        setStorageCleared={setStorageCleared}
       />
 
       <Footer />

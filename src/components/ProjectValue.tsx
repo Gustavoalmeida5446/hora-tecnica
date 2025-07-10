@@ -11,6 +11,17 @@ type VariableCost = {
   cost: number;
 };
 
+type Props = {
+  variableCosts: VariableCost[];
+  setVariableCosts: React.Dispatch<React.SetStateAction<VariableCost[]>>;
+  projectDays: number;
+  setProjectDays: React.Dispatch<React.SetStateAction<number>>;
+  calculatedHourRate: number;
+  workHoursPerDay: number;
+  storageCleared: boolean;
+  setStorageCleared: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 export function ProjectValue({
   variableCosts,
   setVariableCosts,
@@ -18,14 +29,9 @@ export function ProjectValue({
   setProjectDays,
   calculatedHourRate,
   workHoursPerDay,
-}: {
-  variableCosts: VariableCost[];
-  setVariableCosts: React.Dispatch<React.SetStateAction<VariableCost[]>>;
-  projectDays: number;
-  setProjectDays: React.Dispatch<React.SetStateAction<number>>;
-  calculatedHourRate: number;
-  workHoursPerDay: number;
-}) {
+  storageCleared,
+  setStorageCleared,
+}: Props) {
   const [showNotification, setShowNotification] = useState(false);
   const [finalProjectValue, setFinalProjectValue] = useState(0);
   const [showProjectValueNotification, setShowProjectValueNotification] =
@@ -54,18 +60,28 @@ export function ProjectValue({
   };
 
   useEffect(() => {
-    const storedVariableCosts = localStorage.getItem("variableCosts");
-    const storedProjectDays = localStorage.getItem("projectDays");
-    const storedFinalProjectValue = localStorage.getItem("finalProjectValue");
-    if (storedVariableCosts && storedProjectDays) {
-      const parsed = JSON.parse(storedVariableCosts);
-      setVariableCosts(parsed || []);
-      setProjectDays(Number(storedProjectDays));
-      setFinalProjectValue(Number(storedFinalProjectValue));
-      setShowNotification(true);
-      setShowProjectValueNotification(true);
+    if (storageCleared) {
+      setVariableCosts([]);
+      setProjectDays(0);
+      setFinalProjectValue(0);
+      setShowNotification(false);
+      setShowProjectValueNotification(false);
+      setStorageCleared(false);
+    } else {
+      const storedVariableCosts = localStorage.getItem("variableCosts");
+      const storedProjectDays = localStorage.getItem("projectDays");
+      const storedFinalProjectValue = localStorage.getItem("finalProjectValue");
+
+      if (storedVariableCosts && storedProjectDays && storedFinalProjectValue) {
+        const parsedCosts = JSON.parse(storedVariableCosts);
+        setVariableCosts(parsedCosts || []);
+        setProjectDays(Number(storedProjectDays));
+        setFinalProjectValue(Number(storedFinalProjectValue));
+        setShowNotification(true);
+        setShowProjectValueNotification(true);
+      }
     }
-  }, []);
+  }, [storageCleared]);
 
   const handleProjectDays = (event: React.FormEvent) => {
     event.preventDefault();
@@ -165,31 +181,41 @@ export function ProjectValue({
                 ))}
               </ul>
             </div>
-
-            {showNotification && (
-              <div className="notification is-success">
-                <p>você definiu o prazo do projeto em {projectDays} dias</p>
-                Total de custos variáveis:{" "}
-                <strong>
-                  R${calculateTotalVariableCosts(variableCosts).toFixed(2)}
-                </strong>
+            <div className="column">
+              {showNotification && (
+                <div className="notification is-success">
+                  <p>você definiu o prazo do projeto em {projectDays} dias</p>
+                  Total de custos variáveis:{" "}
+                  <strong>
+                    R${calculateTotalVariableCosts(variableCosts).toFixed(2)}
+                  </strong>
+                </div>
+              )}
+            </div>
+            <div className="column">
+              <button
+                onClick={handleCalculate}
+                className="button is-primary is-large mt-5 is-fullwidth"
+              >
+                Calcular valor do projeto
+              </button>
+            </div>
+            {showProjectValueNotification && (
+              <div className="notification is-success mt-5">
+                <p className="title is-4 has-text-centered has-text-weight-normal">
+                  Valor final do projeto:
+                  <strong className="has-text-weight-bold">
+                    {" "}
+                    R$ {finalProjectValue.toFixed(2)}
+                  </strong>
+                </p>
+                <p>
+                  Este é o valor total que você deve cobrar para cobrir os
+                  custos variáveis, o prazo e a hora técnica.
+                </p>
               </div>
             )}
           </div>
-          <div className="column">
-            <button
-              onClick={handleCalculate}
-              className="button is-primary is-large mt-5 is-fullwidth"
-            >
-              Calcular valor do projeto
-            </button>
-          </div>
-
-          {showProjectValueNotification && (
-            <div className="notification is-primary mt-4">
-              Valor final do projeto: R$ {finalProjectValue.toFixed(2)}
-            </div>
-          )}
         </div>
       </div>
     </div>

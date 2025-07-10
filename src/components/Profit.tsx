@@ -4,9 +4,16 @@ import { saveDesiredProfit } from "../Utils";
 type Props = {
   desiredProfit: number;
   setDesiredProfit: React.Dispatch<React.SetStateAction<number>>;
+  storageCleared: boolean;
+  setStorageCleared: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function Profit({ desiredProfit, setDesiredProfit }: Props) {
+export function Profit({
+  desiredProfit,
+  setDesiredProfit,
+  storageCleared,
+  setStorageCleared,
+}: Props) {
   const [showNotification, setShowNotification] = useState(false);
 
   const handleProfitChange = (event: React.FormEvent) => {
@@ -17,13 +24,19 @@ export function Profit({ desiredProfit, setDesiredProfit }: Props) {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("desiredProfit");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setDesiredProfit(parsed || 0);
-      setShowNotification(true);
+    if (storageCleared) {
+      setDesiredProfit(0);
+      setShowNotification(false);
+      setStorageCleared(false);
+    } else {
+      const stored = localStorage.getItem("desiredProfit");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setDesiredProfit(parsed || 0);
+        setShowNotification(true);
+      }
     }
-  }, []);
+  }, [storageCleared]);
 
   return (
     <div className="section">

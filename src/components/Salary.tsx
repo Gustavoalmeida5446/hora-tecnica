@@ -4,9 +4,16 @@ import { saveDesiredSalary } from "../Utils";
 type Props = {
   desiredSalary: number;
   setDesiredSalary: React.Dispatch<React.SetStateAction<number>>;
+  storageCleared: boolean;
+  setStorageCleared: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export function Salary({ desiredSalary, setDesiredSalary }: Props) {
+export function Salary({
+  desiredSalary,
+  setDesiredSalary,
+  storageCleared,
+  setStorageCleared,
+}: Props) {
   const [showNotification, setShowNotification] = useState(false);
 
   const handleSalaryChange = (event: React.FormEvent) => {
@@ -17,13 +24,19 @@ export function Salary({ desiredSalary, setDesiredSalary }: Props) {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("desiredSalary");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setDesiredSalary(parsed || 0);
-      setShowNotification(true);
+    if (storageCleared) {
+      setDesiredSalary(0);
+      setShowNotification(false);
+      setStorageCleared(false);
+    } else {
+      const stored = localStorage.getItem("desiredSalary");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setDesiredSalary(parsed || 0);
+        setShowNotification(true);
+      }
     }
-  }, []);
+  }, [storageCleared]);
 
   return (
     <div className="section">

@@ -7,13 +7,19 @@ type Cost = {
   cost: number;
 };
 
+type Props = {
+  costs: Cost[];
+  setCosts: React.Dispatch<React.SetStateAction<Cost[]>>;
+  storageCleared: boolean;
+  setStorageCleared: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
 export function FixedCosts({
   costs,
   setCosts,
-}: {
-  costs: Cost[];
-  setCosts: React.Dispatch<React.SetStateAction<Cost[]>>;
-}) {
+  storageCleared,
+  setStorageCleared,
+}: Props) {
   const [showNotification, setShowNotification] = useState(false);
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -44,13 +50,19 @@ export function FixedCosts({
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("fixedCosts");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setCosts(parsed || []);
-      setShowNotification(true);
+    if (storageCleared) {
+      setCosts([]);
+      setShowNotification(false);
+      setStorageCleared(false);
+    } else {
+      const stored = localStorage.getItem("fixedCosts");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setCosts(parsed || []);
+        setShowNotification(true);
+      }
     }
-  }, []);
+  }, [storageCleared]);
 
   return (
     <div className="section">

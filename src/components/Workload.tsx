@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { calculateMonthlyWorkload } from "../Utils";
 
 type Props = {
-  monthlyWorkHours: number | null;
-  setMonthlyWorkHours: React.Dispatch<React.SetStateAction<number | null>>;
+  monthlyWorkHours: number;
+  setMonthlyWorkHours: React.Dispatch<React.SetStateAction<number>>;
   workHoursPerDay: number;
   setWorkHoursPerDay: React.Dispatch<React.SetStateAction<number>>;
   workDaysPerWeek: number;
   setWorkDaysPerWeek: React.Dispatch<React.SetStateAction<number>>;
+  storageCleared: boolean;
+  setStorageCleared: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function Workload({
@@ -17,6 +19,8 @@ export function Workload({
   setWorkHoursPerDay,
   workDaysPerWeek,
   setWorkDaysPerWeek,
+  storageCleared,
+  setStorageCleared,
 }: Props) {
   const [showNotification, setShowNotification] = useState(false);
 
@@ -40,15 +44,23 @@ export function Workload({
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("workload");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setWorkHoursPerDay(parsed.hoursPerDay);
-      setWorkDaysPerWeek(parsed.daysPerWeek);
-      setMonthlyWorkHours(parsed.monthlyWorkload);
-      setShowNotification(true);
+    if (storageCleared) {
+      setWorkHoursPerDay(0);
+      setWorkDaysPerWeek(0);
+      setMonthlyWorkHours(0);
+      setShowNotification(false);
+      setStorageCleared(false);
+    } else {
+      const stored = localStorage.getItem("workload");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setWorkHoursPerDay(parsed.hoursPerDay);
+        setWorkDaysPerWeek(parsed.daysPerWeek);
+        setMonthlyWorkHours(parsed.monthlyWorkload);
+        setShowNotification(true);
+      }
     }
-  }, []);
+  }, [storageCleared]);
 
   return (
     <div className="section">

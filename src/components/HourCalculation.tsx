@@ -11,7 +11,9 @@ type Props = {
   monthlyWorkHours: number;
   desiredProfit: number;
   calculatedHourRate: number;
-  setCalculatedHourRate: (value: number) => void;
+  setCalculatedHourRate: React.Dispatch<React.SetStateAction<number>>;
+  storageCleared: boolean;
+  setStorageCleared: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function HourCalculation({
@@ -21,8 +23,10 @@ export function HourCalculation({
   desiredProfit,
   calculatedHourRate,
   setCalculatedHourRate,
+  storageCleared,
+  setStorageCleared,
 }: Props) {
-  const [calculatedCost, setCalculatedCost] = useState<number | null>(null);
+  const [calculatedCost, setCalculatedCost] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
 
   const handleCalculate = () => {
@@ -45,14 +49,21 @@ export function HourCalculation({
     localStorage.setItem("calculatedCost", cost.toFixed(2).toString());
   };
   useEffect(() => {
-    const storedHourRate = localStorage.getItem("calculatedHourRate");
-    const storedCost = localStorage.getItem("calculatedCost");
-    if (storedHourRate && storedCost) {
-      setCalculatedHourRate(Number(storedHourRate));
-      setCalculatedCost(Number(storedCost));
-      setShowNotification(true);
+    if (storageCleared) {
+      setCalculatedHourRate(0);
+      setCalculatedCost(0);
+      setShowNotification(false);
+      setStorageCleared(false);
+    } else {
+      const storedHourRate = localStorage.getItem("calculatedHourRate");
+      const storedCost = localStorage.getItem("calculatedCost");
+      if (storedHourRate && storedCost) {
+        setCalculatedHourRate(Number(storedHourRate));
+        setCalculatedCost(Number(storedCost));
+        setShowNotification(true);
+      }
     }
-  }, []);
+  }, [storageCleared]);
 
   return (
     <div className="section">
