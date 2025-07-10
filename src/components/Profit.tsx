@@ -1,4 +1,30 @@
-export function Profit() {
+import { useState, useEffect } from "react";
+import { saveDesiredProfit } from "../Utils";
+
+type Props = {
+  desiredProfit: number;
+  setDesiredProfit: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export function Profit({ desiredProfit, setDesiredProfit }: Props) {
+  const [showNotification, setShowNotification] = useState(false);
+
+  const handleProfitChange = (event: React.FormEvent) => {
+    event.preventDefault();
+    saveDesiredProfit(desiredProfit);
+    localStorage.setItem("desiredProfit", JSON.stringify(desiredProfit));
+    setShowNotification(true);
+  };
+
+  useEffect(() => {
+    const stored = localStorage.getItem("desiredProfit");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setDesiredProfit(parsed || 0);
+      setShowNotification(true);
+    }
+  }, []);
+
   return (
     <div className="section">
       <div className="container">
@@ -13,16 +39,31 @@ export function Profit() {
               custos. Com base nisso, a calculadora mostrará quanto você deve
               cobrar por hora para cobrir os custos e obter o lucro desejado.
             </p>
-
-            <div className="column">
-              <label className="label">Margem de lucro (%)</label>
-              <input className="input" type="number" placeholder="Ex: 30" />
-            </div>
-            <div className="column">
-              <button className="button is-link ">
-                Definir margem de lucro
-              </button>
-            </div>
+            <form onSubmit={handleProfitChange}>
+              <div className="column">
+                <label className="label">Margem de lucro (%)</label>
+                <input
+                  className="input"
+                  type="number"
+                  placeholder="Ex: 30"
+                  value={desiredProfit || ""}
+                  onChange={(e) => {
+                    setDesiredProfit(Number(e.target.value));
+                  }}
+                />
+              </div>
+              <div className="column">
+                <button className="button is-link" type="submit">
+                  Definir margem de lucro
+                </button>
+              </div>
+            </form>
+            {showNotification && (
+              <div className="notification is-success mt-4">
+                Você definiu a margem de lucro em{" "}
+                <strong>{desiredProfit}%</strong>
+              </div>
+            )}
           </div>
         </div>
       </div>

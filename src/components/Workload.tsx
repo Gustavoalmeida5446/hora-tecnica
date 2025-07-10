@@ -1,10 +1,24 @@
 import { useState, useEffect } from "react";
 import { calculateMonthlyWorkload } from "../Utils";
 
-export function Workload() {
-  const [workHoursPerDay, setWorkHoursPerDay] = useState(0);
-  const [workDaysPerWeek, setWorkDaysPerWeek] = useState(0);
-  const [monthlyWorkHours, setMonthlyWorkHours] = useState<number | null>(null);
+type Props = {
+  monthlyWorkHours: number | null;
+  setMonthlyWorkHours: React.Dispatch<React.SetStateAction<number | null>>;
+  workHoursPerDay: number;
+  setWorkHoursPerDay: React.Dispatch<React.SetStateAction<number>>;
+  workDaysPerWeek: number;
+  setWorkDaysPerWeek: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export function Workload({
+  monthlyWorkHours,
+  setMonthlyWorkHours,
+  workHoursPerDay,
+  setWorkHoursPerDay,
+  workDaysPerWeek,
+  setWorkDaysPerWeek,
+}: Props) {
+  const [showNotification, setShowNotification] = useState(false);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -22,6 +36,7 @@ export function Workload() {
         monthlyWorkload: totalHours,
       })
     );
+    setShowNotification(true);
   };
 
   useEffect(() => {
@@ -31,6 +46,7 @@ export function Workload() {
       setWorkHoursPerDay(parsed.hoursPerDay);
       setWorkDaysPerWeek(parsed.daysPerWeek);
       setMonthlyWorkHours(parsed.monthlyWorkload);
+      setShowNotification(true);
     }
   }, []);
 
@@ -73,6 +89,8 @@ export function Workload() {
                     placeholder="Ex: 5"
                     min="1"
                     max="7"
+                    step="1"
+                    size={1}
                     value={workDaysPerWeek || ""}
                     onChange={(e) =>
                       setWorkDaysPerWeek(Math.min(Number(e.target.value), 7))
@@ -86,12 +104,14 @@ export function Workload() {
                 </div>
               </div>
             </form>
-            <div className="notification is-success mt-4">
-              Você definiu uma jornada de <strong>{workHoursPerDay}</strong>{" "}
-              horas por dia, <strong>{workDaysPerWeek}</strong> dias por semana.{" "}
-              <br />
-              Total mensal: <strong>{monthlyWorkHours} horas</strong>.
-            </div>
+            {showNotification && (
+              <div className="notification is-success mt-4">
+                Você definiu uma jornada de <strong>{workHoursPerDay}</strong>{" "}
+                horas por dia, <strong>{workDaysPerWeek}</strong> dias por
+                semana. <br />
+                Total mensal: <strong>{monthlyWorkHours} horas</strong>.
+              </div>
+            )}
           </div>
         </div>
       </div>

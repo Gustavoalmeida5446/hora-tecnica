@@ -1,57 +1,75 @@
+import { useState } from "react";
 import { FixedCosts } from "./components/FixedCosts";
 import { HourCalculation } from "./components/HourCalculation";
 import { Profit } from "./components/Profit";
 import { ProjectValue } from "./components/ProjectValue";
 import { Salary } from "./components/Salary";
 import { Workload } from "./components/Workload";
+import { Hero } from "./components/Hero";
 import "./Style.css";
+import { Footer } from "./components/Footer";
+
+type Cost = {
+  id: number;
+  description: string;
+  cost: number;
+};
 
 function App() {
+  const [desiredSalary, setDesiredSalary] = useState(0);
+  const [desiredProfit, setDesiredProfit] = useState(0);
+  const [projectDays, setProjectDays] = useState(0);
+  const [monthlyWorkHours, setMonthlyWorkHours] = useState<number | null>(null);
+  const [costs, setCosts] = useState<Cost[]>([]);
+  const [variableCosts, setVariableCosts] = useState<Cost[]>([]);
+  const [calculatedHourRate, setCalculatedHourRate] = useState(0);
+  const [workHoursPerDay, setWorkHoursPerDay] = useState(0);
+  const [workDaysPerWeek, setWorkDaysPerWeek] = useState(0);
+
   return (
     <>
-      <div className="section hero is-primary">
-        <div className="hero-body">
-          <div className="columns">
-            <div className="column is-half is-offset-one-quarter">
-              <h3 className="title is-1 has-text-centered">
-                Calculadora de Hora Técnica
-              </h3>
-              <p className="mb-4">
-                Esta calculadora ajuda você a descobrir quanto deve cobrar por
-                hora de trabalho, levando em conta seus custos fixos mensais,
-                carga horária disponível e objetivo de renda.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Hero />
 
-      <FixedCosts />
+      <FixedCosts costs={costs} setCosts={setCosts} />
 
-      <Salary />
+      <Salary
+        desiredSalary={desiredSalary}
+        setDesiredSalary={setDesiredSalary}
+      />
 
-      <Workload />
+      <Workload
+        monthlyWorkHours={monthlyWorkHours}
+        setMonthlyWorkHours={setMonthlyWorkHours}
+        workHoursPerDay={workHoursPerDay}
+        setWorkHoursPerDay={setWorkHoursPerDay}
+        workDaysPerWeek={workDaysPerWeek}
+        setWorkDaysPerWeek={setWorkDaysPerWeek}
+      />
 
-      <Profit />
+      <Profit
+        desiredProfit={desiredProfit}
+        setDesiredProfit={setDesiredProfit}
+      />
 
-      <HourCalculation />
+      <HourCalculation
+        fixedCosts={costs}
+        desiredSalary={desiredSalary}
+        desiredProfit={desiredProfit}
+        monthlyWorkHours={monthlyWorkHours ?? 0}
+        setCalculatedHourRate={setCalculatedHourRate}
+        calculatedHourRate={calculatedHourRate}
+      />
 
-      <ProjectValue />
+      <ProjectValue
+        variableCosts={variableCosts}
+        setVariableCosts={setVariableCosts}
+        projectDays={projectDays}
+        setProjectDays={setProjectDays}
+        calculatedHourRate={calculatedHourRate}
+        workHoursPerDay={workHoursPerDay}
+      />
 
-      <footer className="footer">
-        <div className="content has-text-centered">
-          <p>
-            Desenvolvido por Gustavo Almeida. Veja o código no meu{" "}
-            <a
-              href="https://github.com/gustavoalmeida5446"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub
-            </a>
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }
